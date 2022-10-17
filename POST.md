@@ -181,7 +181,8 @@ So let's get started!
 3. Navigate to the 'from-scratch' project: `cd scratch`
 4. Notice the two files inside this folder hello_world.cpp and CMakeLists.txt
 
-```
+hello_world.cpp is a simple C++ program that prints "Hello World!" to the console.
+```C++
 // C++ program to display "Hello World"
 
 // Header file for input output functions
@@ -196,6 +197,16 @@ int main()
 
     return 0;
 }
+```
+CMakeLists.txt is a CMake file that describes the project and how to build it.
+
+```CMake
+cmake_minimum_required (VERSION 3.8)
+
+project(HelloWorld CXX)
+set(CMAKE_CXX_STANDARD 14)
+
+add_executable(HelloWorld hello_world.cpp)
 ```
 
 4. 
