@@ -334,6 +334,6 @@ Earthly.dev is one such continuous integration framework. Its key features inclu
 
 - Builds always containerized, repeatable and language agnostic.
 - Easy to understand and use effectively, even for beginners, without the need of a 'Build Guru' in the team.
-- Designed for reasability
+- Designed for readability
 
 To learn more about Earthly.dev and how it can help you build, test and deploy your software projects, check out https://earthly.dev.
