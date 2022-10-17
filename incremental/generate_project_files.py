@@ -13,18 +13,32 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+project_dir = pathlib.Path(f"sample_project")
+
+if not project_dir.exists():
+    project_dir.mkdir(parents=True, exist_ok=True)
+
 
 def generate_file(idx: int) -> None:
-    template_file = pathlib.Path("hello_world_template.cpp")
+    template_file = pathlib.Path("hello_world-template.cpp")
     template_text = template_file.read_text()
     template_text = template_text.replace("$python_args$", str(idx))
-    new_file = pathlib.Path(f"hello_world_{idx}.cpp")
+    new_file = project_dir / pathlib.Path(f"hello_world_{idx}.cpp")
 
-    with open(new_file, "w") as f:
-        f.write(template_text)
+    if not new_file.exists():
+        with open(new_file, "w") as f:
+            f.write(template_text)
 
-    with open(pathlib.Path(f"CMakeLists-{args.num_files}-file-project.txt"), "a") as f:
-        f.write(f"add_executable(HelloWorld hello_world_{idx}.cpp\n")
+        cmake_filepath = project_dir / pathlib.Path(f"CMakeLists.txt")
+
+        if not cmake_filepath.exists():
+            cmake_template_filepath = pathlib.Path("CMakeLists-template.txt")
+            template_text = cmake_template_filepath.read_text()
+            with open(cmake_filepath, "w") as f:
+                f.write(template_text)
+
+        with open(project_dir / pathlib.Path(f"CMakeLists.txt"), "a") as f:
+            f.write(f"add_executable(HelloWorld{idx} hello_world_{idx}.cpp)\n")
 
 
 if __name__ == "__main__":

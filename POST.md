@@ -174,6 +174,12 @@ We have created a sample project at https://github.com/AntreasAntoniou/ninja-tut
 
 This tutorial includes a simple 'from-scratch' project as well as one 'incremental' project to demonstrate time-saving features of Ninja.
 
+Note: You'll need CMake to be installed to build the project. Please follow the instructions at https://cmake.org/install/ to install CMake.
+
+For Linux users this can be done with a single command in your terminal `sudo snap install cmake --classic`, and on Mac-OS with `brew install cmake`.
+
+#### Creating a project from scratch
+
 So let's get started!
 
 1. Clone the repository: `git clone https://github.com/AntreasAntoniou/ninja-tutorial.git`
@@ -209,4 +215,124 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(HelloWorld hello_world.cpp)
 ```
 
-4. 
+Now we will use CMake to generate a build file for Ninja.
+
+```bash
+cmake -G Ninja
+```
+
+This should generate a build.ninja file in the current directory, along with related configuration files.
+
+Now we can build the project with Ninja.
+
+```bash
+ninja
+```
+
+That's all! You have successfully built a project with Ninja.
+
+#### Creating and building an incremental project
+
+Now, let's go back to the root of the repository and navigate to the 'incremental' project.
+
+```bash
+cd ..
+cd incremental
+```
+
+There are three files here: hello_world-template.cpp, CMakeLists-template.txt and generate_project_files.py.
+
+The generate_project_files.py script is a Python script that generates the C++ project files and the CMake file from the template files.
+
+We need to run this script twice, one to generate a 10000 file project, and another to generate a 10001 file project. The idea being that the second project will be an incremental build of the first.
+
+So first let's generate the 10000 file project
+```bash
+python generate_project_files.py --num_files 10000
+```
+
+Now we can use CMake to generate a build file for Ninja.
+
+```bash
+cmake -S sample_project -G Ninja
+```
+
+This should generate a build.ninja file in the current directory, along with related configuration files.
+
+Now we can build the project with Ninja.
+
+```bash
+ninja
+```
+
+Now let's emulate an incremental build by adding one more file to our sample project
+```bash
+python generate_project_files.py --num_files 10001
+```
+
+Now we can use CMake to generate a build file for Ninja.
+
+```bash
+cmake -S sample_project -G Ninja
+```
+
+This should generate a build.ninja file in the current directory, along with related configuration files.
+
+Now we can build the project with Ninja.
+
+```bash
+ninja
+```
+
+All done. In the second build, Ninja only builds the new file and not the entire project.
+
+You can see this via the terminal output that shows how many files had to be processed, as well as with the time taken.
+
+On my local setup (Apple M1 Max 16 inch) the first build took 354 seconds, and the second build took 3 seconds.
+
+Below is a copy of the terminal output for the second build.
+
+```bash
+❯ cmake -S sample_project/ -G Ninja
+-- The CXX compiler identification is AppleClang 14.0.0.14000029
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/helloworld/ninja-tutorial/incremental
+
+ninja-tutorial/incremental on  main [!+?] via △ v3.24.2 via 🐍 v3.9.13 on ☁️  took 4s
+❯ ninja
+[20000/20000] Linking CXX executable HelloWorld9998
+
+ninja-tutorial/incremental on  main [!+?] via 🐍 v3.9.13 on ☁️ took 5m54s
+❯ python generate_project_files.py --num_files 10001
+Done
+
+ninja-tutorial/incremental on  main [!+?] via 🐍 v3.9.13 on ☁️
+❯ cmake -S sample_project/ -G Ninja
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/helloworld/ninja-tutorial/incremental
+
+ninja-tutorial/incremental on  main [!+?] via 🐍 v3.9.13 on ☁️ took 3s
+❯ ninja
+[2/2] Linking CXX executable HelloWorld10000
+```
+
+# Conclusion
+
+In this article you have learned what a build system is, what Ninja is, how to install Ninja and how to use it to build your C++ projects. Furthermore, you have learned when Ninja is useful and how it can save you time, as well as when Ninja might not be a good fit.
+
+Tools that help automate the building, testing and deployment process of software, such as the build systems we have discussed in this article, are essential to the success of any software project. Ninja is a great tool that can help you save time and effort when building your C++ projects. In the same vein, Continuous Integration frameworks that automate the very process of building, testing and deployment such that all one has to do is push an update to a repo, and then the CI framework takes care of the rest, are also essential to the success of any software project.
+
+Earthly.dev is one such continuous integration framework. Its key features include:
+
+- Builds always containerized, repeatable and language agnostic.
+- Easy to understand and use effectively, even for beginners, without the need of a 'Build Guru' in the team.
+- Designed for reasability
+
+To learn more about Earthly.dev and how it can help you build, test and deploy your software projects, check out https://earthly.dev.
